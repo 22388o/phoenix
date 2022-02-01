@@ -338,6 +338,9 @@ struct ScanView: View, ViewName {
 				removal: .move(edge: .bottom)
 			)
 		)
+		.onAppear {
+			onAppear()
+		}
 		.onReceive(willEnterForegroundPublisher) { _ in
 			willEnterForeground()
 		}
@@ -411,10 +414,27 @@ struct ScanView: View, ViewName {
 		}
 	}
 	
+	func onAppear() {
+		log.trace("[\(viewName)] onAppear()")
+		
+		checkClipboard()
+	}
+	
 	func willEnterForeground() {
 		log.trace("[\(viewName)] willEnterForeground()")
 		
-		clipboardHasString = UIPasteboard.general.hasStrings
+		checkClipboard()
+	}
+	
+	func checkClipboard() {
+		if UIPasteboard.general.hasStrings {
+			clipboardHasString = true
+			if let _ = UIPasteboard.general.string {
+				// Todo...
+			}
+		} else {
+			clipboardHasString = false
+		}
 	}
 	
 	func modelDidChange(_ newModel: Scan.Model) {
