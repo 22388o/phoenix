@@ -277,7 +277,7 @@ struct ScanView: View {
 					colorScheme: colorScheme.opposite,
 					style: .chrome,
 					duration: 10.0,
-					location: .middle,
+					alignment: .middle,
 					showCloseButton: true
 				)
 			}
