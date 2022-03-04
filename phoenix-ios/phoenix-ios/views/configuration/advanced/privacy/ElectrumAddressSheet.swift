@@ -323,7 +323,7 @@ struct ElectrumAddressSheet: View {
 				customizeServerView_status_untrusted(cert)
 			}
 		case .failure(_):
-			Text("Check internet connection")
+			Text("Check spelling & internet connection")
 				.bold()
 				.foregroundColor(Color.appNegative)
 				.font(.footnote)
@@ -542,6 +542,23 @@ struct ElectrumAddressSheet: View {
 		return array.first ?? ""
 	}
 	
+	func pubKey(_ cert: SecCertificate) -> String? {
+		
+		guard let key = SecCertificateCopyKey(cert) else {
+			return nil
+		}
+		
+		var cferr: Unmanaged<CFError>? = nil
+		let cfdata = SecKeyCopyExternalRepresentation(key, &cferr)
+		
+		if let cfdata = cfdata {
+			let data = cfdata as Data
+			return data.base64EncodedString()
+		} else {
+			return nil
+		}
+	}
+	
 	func encodePEM(_ cert: SecCertificate) -> String {
 		
 		let derData = SecCertificateCopyData(cert) as Data
@@ -669,15 +686,38 @@ struct ElectrumAddressSheet: View {
 		   let checkedHost: String = checkHost(),
 		   let checkedPort: UInt16 = checkPort()
 		{
-			// Todo: Pin selfSignedCert if needed
+			let pinnedPubKey: String?
+			let tls: Lightning_kmpTcpSocketTLS
+			if let cert = untrustedCert {
+				guard let pubKey = pubKey(cert) else {
+					return toast.pop(
+						Text("Unable to extract public key!").anyView,
+						colorScheme: colorScheme.opposite,
+						alignment: .none
+					)
+				}
+				pinnedPubKey = pubKey
+				tls = Lightning_kmpTcpSocketTLS.PINNED_PUBLIC_KEY(pubKey: pubKey)
+			} else {
+				pinnedPubKey = nil
+				tls = Lightning_kmpTcpSocketTLS.TRUSTED_CERTIFICATES()
+			}
 			
-			Prefs.shared.electrumConfig = ElectrumConfigPrefs(host: checkedHost, port: checkedPort)
-			let address = "\(checkedHost):\(checkedPort)"
-			mvi.intent(ElectrumConfiguration.IntentUpdateElectrumServer(address: address))
+			Prefs.shared.electrumConfig = ElectrumConfigPrefs(
+				host: checkedHost,
+				port: checkedPort,
+				pinnedPubKey: pinnedPubKey
+			)
+			mvi.intent(ElectrumConfiguration.IntentUpdateElectrumServer(server: Lightning_kmpServerAddress(
+				host: checkedHost,
+				port: Int32(checkedPort),
+				tls: tls
+			)))
 			
 		} else {
+			
 			Prefs.shared.electrumConfig = nil
-			mvi.intent(ElectrumConfiguration.IntentUpdateElectrumServer(address: nil))
+			mvi.intent(ElectrumConfiguration.IntentUpdateElectrumServer(server: nil))
 		}
 		
 		shortSheetState.close()

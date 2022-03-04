@@ -4,6 +4,7 @@ import fr.acinq.lightning.channel.*
 import fr.acinq.lightning.db.IncomingPayment
 import fr.acinq.lightning.db.OutgoingPayment
 import fr.acinq.lightning.db.WalletPayment
+import fr.acinq.lightning.io.TcpSocket
 import fr.acinq.lightning.payment.PaymentRequest
 import fr.acinq.phoenix.data.Chain
 import org.kodein.memory.util.freeze
@@ -172,5 +173,26 @@ fun ChannelState.asClosed(): Closed? = when (this) {
 }
 fun ChannelState.asAborted(): Aborted? = when (this) {
     is Aborted -> this
+    else -> null
+}
+
+// Class type not exported to iOS unless we explicitly reference it in PhoenixShared.
+fun TcpSocket.TLS.asDisabled(): TcpSocket.TLS.DISABLED? = when (this) {
+    is TcpSocket.TLS.DISABLED -> this
+    else -> null
+}
+
+fun TcpSocket.TLS.asTrustedCertificates(): TcpSocket.TLS.TRUSTED_CERTIFICATES? = when (this) {
+    is TcpSocket.TLS.TRUSTED_CERTIFICATES -> this
+    else -> null
+}
+
+fun TcpSocket.TLS.asPinnedPublicKey(): TcpSocket.TLS.PINNED_PUBLIC_KEY? = when (this) {
+    is TcpSocket.TLS.PINNED_PUBLIC_KEY -> this
+    else -> null
+}
+
+fun TcpSocket.TLS.asUnsafeCertificates(): TcpSocket.TLS.UNSAFE_CERTIFICATES? = when (this) {
+    is TcpSocket.TLS.UNSAFE_CERTIFICATES -> this
     else -> null
 }

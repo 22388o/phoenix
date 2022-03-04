@@ -111,7 +111,7 @@ class AppConnectionsDaemon(
                                 name = "Electrum",
                                 statusStateFlow = electrumClient.connectionState
                             ) {
-                                val electrumServerAddress : ServerAddress? = configurationManager.electrumConfig().value?.let { electrumConfig ->
+                                val electrumServerAddress: ServerAddress? = configurationManager.electrumConfig().value?.let { electrumConfig ->
                                     when (electrumConfig) {
                                         is ElectrumConfig.Custom -> electrumConfig.server
                                         is ElectrumConfig.Random -> configurationManager.randomElectrumServer()
@@ -232,8 +232,7 @@ class AppConnectionsDaemon(
                     is ElectrumConfig.Custom -> {
                         when (newElectrumConfig) {
                             is ElectrumConfig.Custom -> { // custom -> custom
-                                newElectrumConfig.server.host != oldElectrumConfig.server.host ||
-                                newElectrumConfig.server.port != oldElectrumConfig.server.port
+                                newElectrumConfig == oldElectrumConfig
                             }
                             is ElectrumConfig.Random -> true // custom -> random
                             else -> true // custom -> null
