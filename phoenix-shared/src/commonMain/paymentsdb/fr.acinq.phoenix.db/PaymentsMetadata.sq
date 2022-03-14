@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS payments_metadata (
     lnurl_metadata_blob BLOB,
     lnurl_successAction_type TEXT AS LNUrlSuccessAction.TypeVersion,
     lnurl_successAction_blob BLOB,
+    original_fiat_type TEXT,
+    original_fiat_rate REAL,
     user_description TEXT,
     user_notes TEXT DEFAULT NULL,
     modified_at INTEGER DEFAULT NULL,
@@ -34,9 +36,10 @@ INSERT INTO payments_metadata (
             lnurl_description,
             lnurl_metadata_type, lnurl_metadata_blob,
             lnurl_successAction_type, lnurl_successAction_blob,
+            original_fiat_type, original_fiat_rate,
             user_description, user_notes,
             modified_at)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateUserInfo:
 UPDATE payments_metadata

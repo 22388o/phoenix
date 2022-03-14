@@ -25,6 +25,8 @@ class MetadataQueries(val database: PaymentsDatabase) {
             lnurl_metadata_blob = data.lnurl_metadata?.second,
             lnurl_successAction_type = data.lnurl_successAction?.first,
             lnurl_successAction_blob = data.lnurl_successAction?.second,
+            original_fiat_type = data.original_fiat?.type,
+            original_fiat_rate = data.original_fiat?.rate,
             user_description = data.user_description,
             user_notes = data.user_notes,
             modified_at = data.modified_at
@@ -99,6 +101,8 @@ class MetadataQueries(val database: PaymentsDatabase) {
                     lnurl_metadata_blob = null,
                     lnurl_successAction_type = null,
                     lnurl_successAction_blob = null,
+                    original_fiat_type = null,
+                    original_fiat_rate = null,
                     user_description = userDescription,
                     user_notes = userNotes,
                     modified_at = modifiedAt
@@ -132,6 +136,8 @@ class MetadataQueries(val database: PaymentsDatabase) {
             lnurl_metadata_blob: ByteArray?,
             lnurl_successAction_type: LNUrlSuccessAction.TypeVersion?,
             lnurl_successAction_blob: ByteArray?,
+            original_fiat_type: String?,
+            original_fiat_rate: Double?,
             user_description: String?,
             user_notes: String?,
             modified_at: Long?
@@ -151,11 +157,17 @@ class MetadataQueries(val database: PaymentsDatabase) {
                     Pair(lnurl_successAction_type, lnurl_successAction_blob)
                 } else null
 
+            val originalFiat =
+                if (original_fiat_type != null && original_fiat_rate != null) {
+                    OriginalFiat(original_fiat_type, original_fiat_rate)
+                } else null
+
             return WalletPaymentMetadataRow(
                 lnurl_base = lnurlBase,
                 lnurl_metadata = lnurlMetadata,
                 lnurl_successAction = lnurlSuccesssAction,
                 lnurl_description = lnurl_description,
+                original_fiat = originalFiat,
                 user_description = user_description,
                 user_notes = user_notes,
                 modified_at = modified_at

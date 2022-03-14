@@ -446,6 +446,8 @@ class CloudKitDb(
                             lnurl_successAction_type = row.lnurl_successAction?.first,
                             lnurl_successAction_blob = row.lnurl_successAction?.second,
                             lnurl_description = row.lnurl_description,
+                            original_fiat_type = row.original_fiat?.type,
+                            original_fiat_rate = row.original_fiat?.rate,
                             user_description = row.user_description,
                             user_notes = row.user_notes,
                             modified_at = row.modified_at
